@@ -5,6 +5,18 @@
   <groupId>io.magentys</groupId>
   <artifactId>cherry-reactive</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <packaging>jar</packaging>
 
   <name>cherry-reactive</name>
@@ -36,6 +48,10 @@
       <artifactId>akka-testkit_2.11</artifactId>
       <version>2.4.7</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.aol.simplereact</groupId>
+      <artifactId>cyclops-react</artifactId>
+      <version>1.0.0-RC4</version>
+    </dependency>
   </dependencies>
 </project>
