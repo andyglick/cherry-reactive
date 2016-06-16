@@ -19,7 +19,6 @@ public class ReactiveAgent extends FunctionalAgent {
     public ReactiveAgent(Memory memory) {
         super(memory);
         system = ActorSystem.create(this.name());
-
     }
 
     public static ReactiveAgent create(Memory memory) {
@@ -27,18 +26,18 @@ public class ReactiveAgent extends FunctionalAgent {
     }
 
     public static ReactiveAgent createFrom(Agent agent) {
-        return (ReactiveAgent) new ReactiveAgent(agent.getMemory()).setTools(agent.getTools());
+        return (ReactiveAgent) new ReactiveAgent(agent.getMemory()).setTools(agent.getTools()).setNarrators(agent.getNarrators());
     }
 
     public <RESULT> RESULT performs(ReactiveMission<RESULT> reactiveMission) {
-        Optional<MissionStrategy> strategyToUse = getMissionStrategyFrom(reactiveMission);
+        Optional<MissionStrategy> strategyToUse = decideStrategyToUse(reactiveMission);
         strategyToUse.ifPresent(missionSchedule -> missionSchedule.beforeMissions().stream().forEach(super::performs));
         RESULT result = super.performs(reactiveMission);
         strategyToUse.ifPresent(missionSchedule -> missionSchedule.afterMissions().stream().forEach(super::performs));
         return result;
     }
 
-    private Optional<MissionStrategy> getMissionStrategyFrom(ReactiveMission reactiveMission){
+    private Optional<MissionStrategy> decideStrategyToUse(ReactiveMission reactiveMission){
         if(reactiveMission.hasStrategy()) return reactiveMission.strategy();
         if(iHaveDefaultStrategy()) return Optional.ofNullable(defaultStrategy);
         return Optional.empty();
