@@ -45,13 +45,14 @@ public class ReactiveAgentTest {
     public void shouldDoSomething() throws Exception {
         ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory())
                                                    .withDefaultStrategy(
-                                                                        aStrategy().butFirst(doThis(), doThat())
+                                                                        aStrategy().butFirst(doThat())
                                                                                    .onAnyException(RuntimeException.class));
 
         reactiveAgent.addNarrators(new SysoutNarrator());
         SecretMission secretMission = new SecretMission();
         reactiveAgent.performs(
                 secretMission
+
                                  .butFirst(doThis())
                                  .on(Duration.create(3, MINUTES), doThis())
                                  .on(eventOf("TimeOut"), doThis())
