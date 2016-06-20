@@ -31,7 +31,7 @@ public interface Eventful<ReturnType extends Eventful> {
     ReturnType onExceptions(final Set<Class<? extends Throwable>> events, final Mission... missions);
     ReturnType onExceptions(final Set<Class<? extends Throwable>> events, final Class<? extends Throwable> throwableClass);
 
-    ReturnType butFirst(final Mission... missions);
+    ReturnType first(final Mission... missions);
 
     ReturnType andFinally(final Mission... missions);
     ReturnType andFinally(final Class<? extends Throwable> throwableClass);

@@ -37,6 +37,10 @@ public class ReactiveAgent extends FunctionalAgent {
         return result;
     }
 
+    public <RESULT> RESULT performs(ReactiveMission<RESULT> reactiveMission, MissionStrategy missionStrategy){
+        return performs(reactiveMission.withStrategy(missionStrategy));
+    }
+
     private Optional<MissionStrategy> decideStrategyToUse(ReactiveMission reactiveMission){
         if(reactiveMission.hasStrategy()) return reactiveMission.strategy();
         if(iHaveDefaultStrategy()) return Optional.ofNullable(defaultStrategy);

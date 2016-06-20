@@ -9,8 +9,6 @@ import io.magentys.narrators.SysoutNarrator;
 import org.junit.Test;
 import scala.concurrent.duration.Duration;
 
-import java.util.concurrent.TimeUnit;
-
 import static io.magentys.CoreMemory.coreMemory;
 import static io.magentys.cherry.reactive.MissionStrategy.aStrategy;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.DoThat.doThat;
@@ -45,7 +43,7 @@ public class ReactiveAgentTest {
     public void shouldDoSomething() throws Exception {
         ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory())
                                                    .withDefaultStrategy(
-                                                                        aStrategy().butFirst(doThat())
+                                                                        aStrategy().first(doThat())
                                                                                    .onAnyException(RuntimeException.class));
 
         reactiveAgent.addNarrators(new SysoutNarrator());
@@ -53,7 +51,7 @@ public class ReactiveAgentTest {
         reactiveAgent.performs(
                 secretMission
 
-                                 .butFirst(doThis())
+                                 .first(doThis())
                                  .on(Duration.create(3, MINUTES), doThis())
                                  .on(eventOf("TimeOut"), doThis())
                                  .on(eventOf("Event2"), RuntimeException.class)
@@ -65,7 +63,7 @@ public class ReactiveAgentTest {
 
     private class Tool{}
 
-    @Narrate("My Mystical mission")
+    @Narrate("My Secret mission")
     private static class SecretMission extends BaseReactiveMission<String> {
 
         @Override

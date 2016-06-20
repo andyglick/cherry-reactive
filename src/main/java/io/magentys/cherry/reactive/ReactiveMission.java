@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ReactiveMission<RESULT> extends Mission<RESULT>, Eventful<ReactiveMission<RESULT>> {
 
 
-    ReactiveMission<RESULT> withSchedule(final MissionStrategy missionStrategy);
+    ReactiveMission<RESULT> withStrategy(final MissionStrategy missionStrategy);
     Optional<MissionStrategy> strategy();
     Boolean hasStrategy();
 

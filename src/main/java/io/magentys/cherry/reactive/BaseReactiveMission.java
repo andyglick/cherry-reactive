@@ -109,8 +109,8 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     }
 
     @Override
-    public ReactiveMission<RESULT> butFirst(Mission... missions) {
-        myStrategy().butFirst(missions);
+    public ReactiveMission<RESULT> first(Mission... missions) {
+        myStrategy().first(missions);
         return this;
     }
 
@@ -128,7 +128,7 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     }
 
     @Override
-    public ReactiveMission<RESULT> withSchedule(MissionStrategy missionStrategy) {
+    public ReactiveMission<RESULT> withStrategy(MissionStrategy missionStrategy) {
         this.missionStrategy = missionStrategy;
         return this;
     }

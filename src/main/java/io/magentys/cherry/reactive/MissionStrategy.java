@@ -136,7 +136,7 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
     }
 
     @Override
-    public MissionStrategy butFirst(Mission... missions) {
+    public MissionStrategy first(Mission... missions) {
         this.beforeMissions = asList(missions);
         return this;
     }
