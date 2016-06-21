@@ -1,6 +1,6 @@
 package io.magentys.cherry.reactive;
 
-public interface MissionEvent<BODY,METADATA> {
+public interface CherryEvent<BODY,METADATA> {
 
     BODY body();
 

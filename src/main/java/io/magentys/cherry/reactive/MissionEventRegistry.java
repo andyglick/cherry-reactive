@@ -4,8 +4,8 @@ import java.util.Set;
 
 public interface MissionEventRegistry {
 
-    void addEvents(MissionEvent event);
+    void addEvents(CherryEvent event);
 
-    Set<MissionEvent> events();
+    Set<CherryEvent> events();
 
 }

@@ -18,11 +18,11 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
     private List<Mission> afterMissions = new ArrayList<>();
     private Pair<Duration,List<Mission>> durationToMissions = Pair.create(Duration.Zero(),new ArrayList<>());
     private Map<String, List<Mission>> eventToMissions = new ConcurrentHashMap<>();
-    private Map<String, Class<? extends Throwable>> eventToExceptions  = new ConcurrentHashMap<>();
-    private Map<Class<? extends Throwable>, Class<? extends Throwable>> exceptionToException  = new ConcurrentHashMap<>();
-    private Map<Class<? extends Throwable>, Class<? extends Throwable>> exceptionToMissions  = new ConcurrentHashMap<>();
+    private Map<Class<? extends Throwable>, List<Mission>> exceptionToMissions  = new ConcurrentHashMap<>();
     private Integer timesToRetry = 0;
     private Boolean shouldNarrateExecutionTime = false;
+    private boolean catchAllExceptions = false;
+    private List<Mission> catchAllMissions = new ArrayList<>();
 
     MissionStrategy(){}
 
@@ -41,16 +41,9 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
         return eventToMissions;
     }
 
-    public Map<String, Class<? extends Throwable>> eventToExceptions() {
-        return eventToExceptions;
-    }
 
 
-    public Map<Class<? extends Throwable>, Class<? extends Throwable>> exceptionToExceptionMappings() {
-        return exceptionToException;
-    }
-
-    public Map<Class<? extends Throwable>, Class<? extends Throwable>> exceptionToMissions() {
+    public Map<Class<? extends Throwable>, List<Mission>> exceptionToMissions() {
         return exceptionToMissions;
     }
 
@@ -64,33 +57,16 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
 
 
     @Override
-    public MissionStrategy on(Duration duration, Class<? extends Throwable> throwableClass) {
-        return this;
-    }
-
-    @Override
     public MissionStrategy timesToRetry(Integer times, Mission... missions) {
         timesToRetry = times;
         return this;
     }
 
     @Override
-    public MissionStrategy timesToRetry(Integer times, Class<? extends Throwable> throwableClass) {
-        timesToRetry = times;
+    public MissionStrategy on(CherryEvent event, Mission... missions) {
         return this;
     }
 
-
-    @Override
-    public MissionStrategy on(MissionEvent event, Mission... missions) {
-        return this;
-    }
-
-
-    @Override
-    public MissionStrategy on(MissionEvent event, Class<? extends Throwable> throwableClass) {
-        return this;
-    }
 
     @Override
     public MissionStrategy on(Class<? extends Throwable> throwableEvent, Mission... missions) {
@@ -98,42 +74,27 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
     }
 
 
-    @Override
-    public MissionStrategy on(Class<? extends Throwable> throwableEvent, Class<? extends Throwable> throwableClass) {
-        return this;
-    }
-
-    @Override
-    public MissionStrategy onAnyException(Class<? extends Throwable> throwableClass) {
-        return this;
-    }
 
     @Override
     public MissionStrategy onAnyException(Mission... missions) {
+        catchAllExceptions = true;
+        catchAllMissions = asList(missions);
+
         return this;
     }
 
     @Override
-    public MissionStrategy onEvents(Set<MissionEvent> missionEvents, Mission... missions) {
+    public MissionStrategy onEvents(Set<CherryEvent> cherryEvents, Mission... missions) {
         return this;
     }
 
 
-    @Override
-    public MissionStrategy onEvents(Set<MissionEvent> missionEvents, Class<? extends Throwable> throwableClass) {
-        return this;
-    }
 
     @Override
     public MissionStrategy onExceptions(Set<Class<? extends Throwable>> events, Mission... missions) {
         return this;
     }
 
-
-    @Override
-    public MissionStrategy onExceptions(Set<Class<? extends Throwable>> events, Class<? extends Throwable> throwableClass) {
-        return this;
-    }
 
     @Override
     public MissionStrategy first(Mission... missions) {
@@ -150,11 +111,6 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
 
 
     @Override
-    public MissionStrategy andFinally(Class<? extends Throwable> throwableClass) {
-        return this;
-    }
-
-    @Override
     public MissionStrategy setNarrateExecutionTime(boolean shouldNarrateExecutionTime) {
         this.shouldNarrateExecutionTime = shouldNarrateExecutionTime;
         return this;
@@ -163,6 +119,11 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
     @Override
     public Boolean shouldNarrateExecutionTime() {
         return shouldNarrateExecutionTime;
+    }
+
+    @Override
+    public int retries() {
+        return timesToRetry;
     }
 
     public List<Mission> afterMissions() {

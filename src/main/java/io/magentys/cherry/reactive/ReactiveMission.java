@@ -14,6 +14,7 @@ public interface ReactiveMission<RESULT> extends Mission<RESULT>, Eventful<React
     ReactiveMission<RESULT> withStrategy(final MissionStrategy missionStrategy);
     Optional<MissionStrategy> strategy();
     Boolean hasStrategy();
+    String name();
 
 
 

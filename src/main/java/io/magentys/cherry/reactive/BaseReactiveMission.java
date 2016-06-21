@@ -27,34 +27,18 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
 
 
     @Override
-    public ReactiveMission<RESULT> on(Duration duration, Class<? extends Throwable> throwableClass) {
-        myStrategy().on(duration, throwableClass);
-        return this;
-    }
-
-    @Override
     public ReactiveMission<RESULT> timesToRetry(Integer times, Mission... missions) {
         myStrategy().timesToRetry(times, missions);
         return this;
     }
 
-    @Override
-    public ReactiveMission<RESULT> timesToRetry(Integer times, Class<? extends Throwable> throwableClass) {
-        myStrategy().timesToRetry(times, throwableClass);
-        return this;
-    }
 
     @Override
-    public ReactiveMission<RESULT> on(MissionEvent event, Mission... missions) {
+    public ReactiveMission<RESULT> on(CherryEvent event, Mission... missions) {
         myStrategy().on(event, missions);
         return this;
     }
 
-    @Override
-    public ReactiveMission<RESULT> on(MissionEvent event, Class<? extends Throwable> throwableClass) {
-        myStrategy().on(event, throwableClass);
-        return this;
-    }
 
     @Override
     public ReactiveMission<RESULT> on(Class<? extends Throwable> throwableEvent, Mission... missions) {
@@ -63,18 +47,6 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     }
 
 
-    @Override
-    public ReactiveMission<RESULT> on(Class<? extends Throwable> throwableEvent, Class<? extends Throwable> throwableClass) {
-        myStrategy().on(throwableEvent, throwableClass);
-        return this;
-    }
-
-    @Override
-    public ReactiveMission<RESULT> onAnyException(Class<? extends Throwable> throwableClass) {
-        myStrategy().onAnyException(throwableClass);
-        return this;
-    }
-
 
     public ReactiveMission<RESULT> onAnyException(Mission... missions) {
         myStrategy().onAnyException(missions);
@@ -82,15 +54,8 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     }
 
     @Override
-    public ReactiveMission<RESULT> onEvents(Set<MissionEvent> missionEvents, Mission... missions) {
-        myStrategy().onEvents(missionEvents, missions);
-        return this;
-    }
-
-
-    @Override
-    public ReactiveMission<RESULT> onEvents(Set<MissionEvent> missionEvents, Class<? extends Throwable> throwableClass) {
-        myStrategy().onEvents(missionEvents, throwableClass);
+    public ReactiveMission<RESULT> onEvents(Set<CherryEvent> cherryEvents, Mission... missions) {
+        myStrategy().onEvents(cherryEvents, missions);
         return this;
     }
 
@@ -103,12 +68,6 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
 
 
     @Override
-    public ReactiveMission<RESULT> onExceptions(Set<Class<? extends Throwable>> events, Class<? extends Throwable> throwableClass) {
-        myStrategy().onExceptions(events, throwableClass);
-        return this;
-    }
-
-    @Override
     public ReactiveMission<RESULT> first(Mission... missions) {
         myStrategy().first(missions);
         return this;
@@ -118,12 +77,6 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     @Override
     public ReactiveMission<RESULT> andFinally(Mission... missions) {
         myStrategy().andFinally(missions);
-        return this;
-    }
-
-    @Override
-    public ReactiveMission<RESULT> andFinally(Class<? extends Throwable> throwableClass) {
-        myStrategy().andFinally(throwableClass);
         return this;
     }
 
@@ -147,6 +100,11 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     public ReactiveMission<RESULT> setNarrateExecutionTime(final boolean shouldNarrateExecutionTime){
         myStrategy().setNarrateExecutionTime(shouldNarrateExecutionTime);
         return this;
+    }
+
+    @Override
+    public int retries(){
+        return myStrategy().retries();
     }
 
     @Override
