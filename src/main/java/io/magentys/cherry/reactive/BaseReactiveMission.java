@@ -1,6 +1,7 @@
 package io.magentys.cherry.reactive;
 
 import io.magentys.Mission;
+import io.magentys.cherry.reactive.events.CherryEvent;
 import scala.concurrent.duration.Duration;
 
 import java.util.Optional;

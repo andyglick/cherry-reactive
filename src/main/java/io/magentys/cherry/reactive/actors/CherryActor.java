@@ -1,7 +1,11 @@
-package io.magentys.cherry.reactive;
+package io.magentys.cherry.reactive.actors;
 
 import akka.actor.UntypedActor;
 import io.magentys.Agent;
+import io.magentys.cherry.reactive.MissionStrategy;
+import io.magentys.cherry.reactive.ReactiveMission;
+import io.magentys.cherry.reactive.events.MultiMissionEvent;
+import io.magentys.cherry.reactive.events.ReactiveMissionEvent;
 
 import java.util.Optional;
 

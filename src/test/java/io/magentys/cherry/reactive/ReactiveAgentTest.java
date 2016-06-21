@@ -13,7 +13,6 @@ import static io.magentys.CoreMemory.coreMemory;
 import static io.magentys.cherry.reactive.MissionStrategy.aStrategy;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.DoThat.doThat;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.DoThis.doThis;
-import static io.magentys.cherry.reactive.MultiMissionEvent.eventOf;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,7 +66,7 @@ public class ReactiveAgentTest {
 
     @Test
     public void shouldPerformMissionUnuccessfully() throws Exception {
-        ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory())
+        ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory(), "ReactiveAgent1")
                                                    .withDefaultStrategy(
                                                                         aStrategy().first(doThat())
                                                                                    .onAnyException(doThis()));

@@ -1,6 +1,7 @@
-package io.magentys.cherry.reactive;
+package io.magentys.cherry.reactive.events;
 
-import io.magentys.Agent;
+import io.magentys.cherry.reactive.ReactiveAgent;
+import io.magentys.cherry.reactive.ReactiveMission;
 
 public class ReactiveMissionEvent implements CherryEvent<ReactiveAgent,ReactiveMission> {
 

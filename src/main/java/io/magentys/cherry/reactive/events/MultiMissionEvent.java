@@ -1,4 +1,4 @@
-package io.magentys.cherry.reactive;
+package io.magentys.cherry.reactive.events;
 
 import io.magentys.Agent;
 import io.magentys.Mission;

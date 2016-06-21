@@ -1,4 +1,4 @@
-package io.magentys.cherry.reactive;
+package io.magentys.cherry.reactive.actors;
 
 import akka.actor.OneForOneStrategy;
 import akka.actor.Props;
@@ -6,6 +6,9 @@ import akka.actor.SupervisorStrategy;
 import akka.actor.UntypedActor;
 import io.magentys.Agent;
 import io.magentys.Mission;
+import io.magentys.cherry.reactive.MissionStrategy;
+import io.magentys.cherry.reactive.ReactiveMission;
+import io.magentys.cherry.reactive.events.ReactiveMissionEvent;
 import scala.concurrent.duration.Duration;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.magentys.cherry.reactive;
+package io.magentys.cherry.reactive.events;
 
 public interface CherryEvent<BODY,METADATA> {
 

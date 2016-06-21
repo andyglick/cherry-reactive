@@ -2,6 +2,7 @@ package io.magentys.cherry.reactive;
 
 import akka.japi.Pair;
 import io.magentys.Mission;
+import io.magentys.cherry.reactive.events.CherryEvent;
 import scala.concurrent.duration.Duration;
 
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
 
     @Override
     public MissionStrategy on(Class<? extends Throwable> throwableEvent, Mission... missions) {
+        exceptionToMissions.put(throwableEvent, asList(missions));
         return this;
     }
 
