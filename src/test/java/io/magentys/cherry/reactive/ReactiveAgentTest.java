@@ -51,6 +51,7 @@ public class ReactiveAgentTest {
 
         reactiveAgent.addNarrators(new SysoutNarrator());
         SecretMission secretMission = new SecretMission();
+        reactiveAgent.obtains(new Tool());
         reactiveAgent.performsReactively(
                 secretMission
 
@@ -73,15 +74,16 @@ public class ReactiveAgentTest {
 
         reactiveAgent.obtains(new Tool());
         reactiveAgent.addNarrators(new SysoutNarrator());
-        SecretMission secretMission = new SecretMission();
-        reactiveAgent.performsReactively(
-                secretMission
+        DangerousMission dangerousMission = new DangerousMission();
+        String result = reactiveAgent.performsReactively(
+                dangerousMission
 
                                  .first(doThat(), doThat(), doThis())
                                  .on(Duration.create(3, MINUTES), doThis())
                                  .on(RuntimeException.class, doThis())
                                  .andFinally(doThat(), doThis())
                         );
+        assertThat(reactiveAgent.hasFailed(), is(true));
         reactiveAgent.terminate();
 
     }

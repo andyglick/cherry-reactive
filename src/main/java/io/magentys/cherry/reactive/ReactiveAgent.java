@@ -5,6 +5,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import io.magentys.Agent;
 import io.magentys.Memory;
+import io.magentys.cherry.reactive.exceptions.StrategyException;
 import io.magentys.java8.FunctionalAgent;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
@@ -87,7 +88,9 @@ public class ReactiveAgent extends FunctionalAgent {
         strategyToUse.ifPresent(strategy -> reactiveMission.withStrategy(strategy));
         RESULT result = null;
         try {
-            result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), 5000), timeout);
+            String strategySet = (String) Await.result(ask(master, asEvent(this, reactiveMission), 5000), timeout);
+            if(strategySet != "setStrategyCompleted") throw new StrategyException("not properly set");
+            result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), 60000), timeout);
         } catch (Exception e) {
            failed = true;
         }
