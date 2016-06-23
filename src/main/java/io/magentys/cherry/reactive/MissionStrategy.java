@@ -4,6 +4,7 @@ import akka.japi.Pair;
 import io.magentys.Mission;
 import io.magentys.cherry.reactive.events.CherryEvent;
 import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
 
     private List<Mission> beforeMissions = new ArrayList<>();
     private List<Mission> afterMissions = new ArrayList<>();
-    private Pair<Duration,List<Mission>> durationToMissions = Pair.create(Duration.Zero(),new ArrayList<>());
+    private Pair<FiniteDuration,List<Mission>> durationToMissions = Pair.create(Duration.Zero(),new ArrayList<>());
     private Map<String, List<Mission>> eventToMissions = new ConcurrentHashMap<>();
     private Map<Class<? extends Throwable>, List<Mission>> exceptionToMissions  = new ConcurrentHashMap<>();
     private Integer timesToRetry = 0;
@@ -34,7 +35,7 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
     }
 
 
-    public Pair<Duration,List<Mission>> timeoutStrategy() {
+    public Pair<FiniteDuration,List<Mission>> timeoutStrategy() {
         return durationToMissions;
     }
 
@@ -51,7 +52,7 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
 
 
     @Override
-    public MissionStrategy on(Duration duration, Mission... missions) {
+    public MissionStrategy timeout(FiniteDuration duration, Mission... missions) {
         durationToMissions = Pair.create(duration, asList(missions));
         return this;
     }
@@ -106,7 +107,7 @@ public class MissionStrategy implements Eventful<MissionStrategy>{
 
 
     @Override
-    public MissionStrategy andFinally(Mission... missions) {
+    public MissionStrategy onSuccess(Mission... missions) {
         this.afterMissions = asList(missions);
         return this;
     }

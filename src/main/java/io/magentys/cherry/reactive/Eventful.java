@@ -3,13 +3,14 @@ package io.magentys.cherry.reactive;
 import io.magentys.Mission;
 import io.magentys.cherry.reactive.events.CherryEvent;
 import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.Set;
 
 
 public interface Eventful<ReturnType extends Eventful> {
 
-    ReturnType on(final Duration duration, final Mission... missions);
+    ReturnType timeout(final FiniteDuration duration, final Mission... missions);
 
     ReturnType timesToRetry(final Integer times, final Mission... missions );
 
@@ -27,7 +28,7 @@ public interface Eventful<ReturnType extends Eventful> {
 
     ReturnType first(final Mission... missions);
 
-    ReturnType andFinally(final Mission... missions);
+    ReturnType onSuccess(final Mission... missions);
 
     ReturnType setNarrateExecutionTime(final boolean shouldNarrateExecutionTime);
 

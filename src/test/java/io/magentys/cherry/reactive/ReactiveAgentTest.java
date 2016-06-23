@@ -4,6 +4,7 @@ import io.magentys.Agent;
 import io.magentys.CoreMemory;
 import io.magentys.Mission;
 import io.magentys.annotations.Narrate;
+import io.magentys.cherry.reactive.models.Failure;
 import io.magentys.java8.FunctionalAgentProvider;
 import io.magentys.narrators.SysoutNarrator;
 import org.junit.Test;
@@ -13,7 +14,9 @@ import static io.magentys.CoreMemory.coreMemory;
 import static io.magentys.cherry.reactive.MissionStrategy.aStrategy;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.DoThat.doThat;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.DoThis.doThis;
+import static io.magentys.cherry.reactive.ReactiveAgentTest.TakeScreenshot.takeScreenshot;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -54,18 +57,19 @@ public class ReactiveAgentTest {
         reactiveAgent.performsReactively(
                 secretMission
 
-                                 .first(doThat(), doThat(), doThis())
-                                 .on(Duration.create(3, MINUTES), doThis())
-                                 .on(RuntimeException.class, doThis())
-                                 .andFinally(doThat(), doThis())
-                        );
-        assertThat(reactiveAgent.hasFailed(),is(false));
+                        .first(doThat(), doThat(), doThis())
+                        .timeout(Duration.create(3, MINUTES), doThis())
+                        .on(RuntimeException.class, doThis())
+                        .onSuccess(doThat(), doThis())
+        );
+        assertThat(reactiveAgent.hasFailed(), is(false));
+        assertThat(reactiveAgent.getFailure(),is(Failure.empty()));
         reactiveAgent.terminate();
 
     }
 
     @Test
-    public void shouldPerformMissionUnuccessfully() throws Exception {
+    public void shouldMarkAgentAsFailedInCaseOfAnError() throws Exception {
         ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory(), "ReactiveAgent1")
                                                    .withDefaultStrategy(
                                                                         aStrategy().first(doThat())
@@ -78,11 +82,14 @@ public class ReactiveAgentTest {
                 dangerousMission
 
                                  .first(doThat(), doThat(), doThis())
-                                 .on(Duration.create(3, MINUTES), doThis())
-                                 .on(RuntimeException.class, doThis())
-                                 .andFinally(doThat(), doThis())
+                                 .timeout(Duration.create(3, SECONDS), doThis())
+                                 .on(RuntimeException.class, takeScreenshot())
+                                 .onSuccess(
+                                         doThat(),
+                                         doThis())
                         );
         assertThat(reactiveAgent.hasFailed(), is(true));
+        assertThat(reactiveAgent.getFailureAs(Exception.class).getMessage(), is("Futures timed out after [1 second]"));
         reactiveAgent.terminate();
 
     }
@@ -139,6 +146,17 @@ public class ReactiveAgentTest {
     public static class DoThat implements Mission<Agent> {
 
         public static DoThat doThat() { return new DoThat(); }
+
+        @Override
+        public Agent accomplishAs(Agent agent) {
+            return agent;
+        }
+    }
+
+    @Narrate("I take screenshots!...")
+    public static class TakeScreenshot implements Mission<Agent>{
+
+        public static TakeScreenshot takeScreenshot() { return new TakeScreenshot(); }
 
         @Override
         public Agent accomplishAs(Agent agent) {

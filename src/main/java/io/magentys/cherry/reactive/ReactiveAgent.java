@@ -3,12 +3,14 @@ package io.magentys.cherry.reactive;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.util.Timeout;
 import io.magentys.Agent;
 import io.magentys.CoreMemory;
 import io.magentys.Memory;
 import io.magentys.cherry.reactive.actors.CherryActor;
 import io.magentys.cherry.reactive.actors.Supervisor;
 import io.magentys.cherry.reactive.exceptions.StrategyException;
+import io.magentys.cherry.reactive.models.Failure;
 import io.magentys.java8.FunctionalAgent;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
@@ -29,11 +31,12 @@ public class ReactiveAgent extends FunctionalAgent {
     private ActorRef slave;
 
     private Boolean failed = false;
+    private Failure failure = Failure.empty();
 
     private ActorRef master;
     private MissionStrategy defaultStrategy;
     private final FiniteDuration defaultTerminationTimeout = Duration.create(30, TimeUnit.SECONDS);
-    private final FiniteDuration timeout = Duration.create(30, TimeUnit.SECONDS);
+    private final FiniteDuration timeout = Duration.create(1, TimeUnit.SECONDS);
 
     /**
      * Default constructor
@@ -107,10 +110,13 @@ public class ReactiveAgent extends FunctionalAgent {
         strategyToUse.ifPresent(strategy -> reactiveMission.withStrategy(strategy));
         RESULT result = null;
         try {
-            String strategySet = (String) Await.result(ask(master, asEvent(this, reactiveMission), 5000), timeout);
+            String strategySet = (String) Await.result(ask(master, asEvent(this, reactiveMission), 1000), timeout);
             if (strategySet != "setStrategyCompleted") throw new StrategyException("not properly set");
-            result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), 60000), timeout);
+            final FiniteDuration allowedDuration = reactiveMission.strategy().get().timeoutStrategy().first();
+            Timeout timeoutFromStrategy = Timeout.durationToTimeout(allowedDuration);
+            result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy), allowedDuration);
         } catch (Exception e) {
+            failure = Failure.failure(e);
             failed = true;
         }
         return result;
@@ -152,6 +158,20 @@ public class ReactiveAgent extends FunctionalAgent {
 
     public Boolean hasFailed() {
         return failed;
+    }
+
+    public Failure getFailure() {
+        return failure;
+    }
+
+    public <TYPE> TYPE getFailureAs(Class<TYPE> type){
+        return failure.getContentAs(type);
+    }
+
+    public ReactiveAgent resetFailure(){
+        failure = Failure.empty();
+        failed = false;
+        return this;
     }
 
 

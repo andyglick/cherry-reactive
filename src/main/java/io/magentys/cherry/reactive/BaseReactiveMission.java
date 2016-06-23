@@ -2,7 +2,7 @@ package io.magentys.cherry.reactive;
 
 import io.magentys.Mission;
 import io.magentys.cherry.reactive.events.CherryEvent;
-import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.Optional;
 import java.util.Set;
@@ -12,7 +12,6 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
 
     private MissionStrategy missionStrategy;
 
-
     private MissionStrategy myStrategy(){
         if(missionStrategy == null) {
             missionStrategy = new MissionStrategy();
@@ -21,8 +20,8 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
     }
 
     @Override
-    public ReactiveMission<RESULT> on(Duration duration, Mission... missions) {
-        myStrategy().on(duration, missions);
+    public ReactiveMission<RESULT> timeout(FiniteDuration duration, Mission... missions) {
+        myStrategy().timeout(duration, missions);
         return this;
     }
 
@@ -76,8 +75,8 @@ public abstract class BaseReactiveMission<RESULT> implements ReactiveMission<RES
 
 
     @Override
-    public ReactiveMission<RESULT> andFinally(Mission... missions) {
-        myStrategy().andFinally(missions);
+    public ReactiveMission<RESULT> onSuccess(Mission... missions) {
+        myStrategy().onSuccess(missions);
         return this;
     }
 
