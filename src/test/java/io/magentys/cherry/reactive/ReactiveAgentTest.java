@@ -91,7 +91,7 @@ public class ReactiveAgentTest {
                                          doThis())
                         );
         assertThat(reactiveAgent.hasFailed(), is(true));
-        assertThat(reactiveAgent.getFailureAs(Exception.class).getMessage(), is("Futures timed out after [1 second]"));
+        assertThat(reactiveAgent.getFailureAs(Exception.class).getMessage(), is("Futures timed out after [3 seconds]"));
         reactiveAgent.terminate();
 
     }
