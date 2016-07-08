@@ -15,6 +15,7 @@ import io.magentys.java8.FunctionalAgent;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import scala.util.Either;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,7 @@ public class ReactiveAgent extends FunctionalAgent {
 
     private Boolean failed = false;
     private Failure failure = Failure.empty();
+
 
     private ActorRef master;
     private MissionStrategy defaultStrategy;
@@ -114,7 +116,11 @@ public class ReactiveAgent extends FunctionalAgent {
             if (strategySet != "setStrategyCompleted") throw new StrategyException("not properly set");
             final FiniteDuration allowedDuration = reactiveMission.strategy().get().timeoutStrategy().first();
             Timeout timeoutFromStrategy = Timeout.durationToTimeout(allowedDuration);
+
+            // TODO: 1. use Either implementation : http://stackoverflow.com/questions/26162407/is-there-an-equivalent-of-scalas-either-in-java-8
             result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy), allowedDuration);
+            // TODO: 2. handle Futures
+            // TODO: 3. make sure we don't execute other missions after failure
         } catch (Exception e) {
             failure = Failure.failure(e);
             failed = true;

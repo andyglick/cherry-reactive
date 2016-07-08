@@ -10,6 +10,8 @@ import io.magentys.narrators.SysoutNarrator;
 import org.junit.Test;
 import scala.concurrent.duration.Duration;
 
+import java.util.concurrent.TimeoutException;
+
 import static io.magentys.CoreMemory.coreMemory;
 import static io.magentys.cherry.reactive.MissionStrategy.aStrategy;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.DoThat.doThat;
@@ -44,7 +46,7 @@ public class ReactiveAgentTest {
     }
 
     @Test
-    public void shouldPerformMissionSuccessfully() throws Exception {
+    public void shouldPerformMissionSuccessfully() throws Throwable {
         ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory())
                                                    .withDefaultStrategy(
                                                                         aStrategy().first(doThat())
@@ -68,8 +70,8 @@ public class ReactiveAgentTest {
 
     }
 
-    @Test
-    public void shouldMarkAgentAsFailedInCaseOfAnError() throws Exception {
+    @Test(expected = TimeoutException.class)
+    public void shouldMarkAgentAsFailedInCaseOfAnError() throws Throwable {
         ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory(), "ReactiveAgent1")
                                                    .withDefaultStrategy(
                                                                         aStrategy().first(doThat())
