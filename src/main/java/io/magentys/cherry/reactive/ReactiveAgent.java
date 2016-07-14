@@ -3,18 +3,23 @@ package io.magentys.cherry.reactive;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.dispatch.OnSuccess;
 import akka.util.Timeout;
 import io.magentys.Agent;
 import io.magentys.CoreMemory;
 import io.magentys.Memory;
+import io.magentys.Mission;
 import io.magentys.cherry.reactive.actors.CherryActor;
 import io.magentys.cherry.reactive.actors.Supervisor;
 import io.magentys.cherry.reactive.exceptions.StrategyException;
 import io.magentys.cherry.reactive.models.Failure;
 import io.magentys.java8.FunctionalAgent;
+import scala.Function1;
 import scala.concurrent.Await;
+import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
+import scala.runtime.BoxedUnit;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +81,6 @@ public class ReactiveAgent extends FunctionalAgent {
     public void terminate(Duration timeout) {
         system.terminate();
         system.awaitTermination(timeout);
-
     }
 
     /**
@@ -105,16 +109,18 @@ public class ReactiveAgent extends FunctionalAgent {
      * @return the actual result of the mission
      */
     public <RESULT> RESULT performsReactively(ReactiveMission<RESULT> reactiveMission) {
+        if(failed) terminate();
         Optional<MissionStrategy> strategyToUse = decideStrategyToUse(reactiveMission);
 
-        strategyToUse.ifPresent(strategy -> reactiveMission.withStrategy(strategy));
+        strategyToUse.ifPresent(reactiveMission::withStrategy);
         RESULT result = null;
         try {
             String strategySet = (String) Await.result(ask(master, asEvent(this, reactiveMission), 1000), timeout);
             if (strategySet != "setStrategyCompleted") throw new StrategyException("not properly set");
             final FiniteDuration allowedDuration = reactiveMission.strategy().get().timeoutStrategy().first();
             Timeout timeoutFromStrategy = Timeout.durationToTimeout(allowedDuration);
-            result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy), allowedDuration);
+            Future<Object> future = ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy);
+            result = (RESULT) Await.result(future, allowedDuration);
         } catch (Exception e) {
             failure = Failure.failure(e);
             failed = true;
@@ -134,6 +140,7 @@ public class ReactiveAgent extends FunctionalAgent {
         return performsReactively(reactiveMission.withStrategy(missionStrategy));
     }
 
+
     private Optional<MissionStrategy> decideStrategyToUse(ReactiveMission reactiveMission) {
         if (reactiveMission.hasStrategy()) return reactiveMission.strategy();
         if (iHaveDefaultStrategy()) return Optional.ofNullable(defaultStrategy);
@@ -151,7 +158,7 @@ public class ReactiveAgent extends FunctionalAgent {
      * @param missionStrategy to be used when no mission-specific strategy is defined
      * @return myself
      */
-    public ReactiveAgent withDefaultStrategy(MissionStrategy missionStrategy) {
+    public ReactiveAgent withDefaultEventStrategy(MissionStrategy missionStrategy) {
         this.defaultStrategy = missionStrategy;
         return this;
     }

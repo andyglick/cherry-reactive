@@ -18,9 +18,7 @@ public interface Eventful<ReturnType extends Eventful> {
 
     ReturnType on(final Class<? extends Throwable> throwableEvent, final Mission... missions);
 
-
     ReturnType onAnyException(Mission... missions);
-
 
     ReturnType onEvents(final Set<CherryEvent> cherryEvents, final Mission... missions);
 

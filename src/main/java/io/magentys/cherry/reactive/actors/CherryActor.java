@@ -13,22 +13,25 @@ public class CherryActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+
         if(message instanceof MultiMissionEvent){
             MultiMissionEvent multiMissionEvent = (MultiMissionEvent) message;
-            Agent agent = multiMissionEvent.body();
-            multiMissionEvent.metadata().stream().forEach(agent::performs);
+            Agent agent = multiMissionEvent.agent();
+            multiMissionEvent.missions().stream().forEach(agent::performs);
         }
+
+
         if(message instanceof ReactiveMissionEvent) {
             // Unwrap message
             ReactiveMissionEvent reactiveMissionEvent = (ReactiveMissionEvent) message;
-            Agent agent = reactiveMissionEvent.body();
-            ReactiveMission reactiveMission = reactiveMissionEvent.metadata();
+            Agent agent = reactiveMissionEvent.agent();
+            ReactiveMission reactiveMission = reactiveMissionEvent.mission();
             Optional<MissionStrategy> strategyToUse = reactiveMission.strategy();
 
             //before
             strategyToUse.ifPresent(missionSchedule -> missionSchedule.beforeMissions().stream().forEach(agent::performs));
 
-            // act
+            // accomplish
             Object result = agent.performs(reactiveMission);
 
             // after
