@@ -33,8 +33,8 @@
   </developers>
 
   <scm>
-    <developerConnection>scm:git:https://github.com/MagenTys/cherry-fest</developerConnection>
-    <url>https://github.com/MagenTys/cherry-fest</url>
+    <developerConnection>scm:git:https://github.com/MagenTys/cherry-reactive</developerConnection>
+    <url>https://github.com/MagenTys/cherry-reactive</url>
     <tag>HEAD</tag>
   </scm>
 
