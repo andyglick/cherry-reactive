@@ -9,13 +9,13 @@ import io.magentys.CoreMemory;
 import io.magentys.Memory;
 import io.magentys.cherry.reactive.actors.CherryActor;
 import io.magentys.cherry.reactive.actors.Supervisor;
+import io.magentys.cherry.reactive.common.Either;
 import io.magentys.cherry.reactive.exceptions.StrategyException;
 import io.magentys.cherry.reactive.models.Failure;
 import io.magentys.java8.FunctionalAgent;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.duration.FiniteDuration;
-import scala.util.Either;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -106,23 +106,21 @@ public class ReactiveAgent extends FunctionalAgent {
      * @param <RESULT>        - the type of the missions' result
      * @return the actual result of the mission
      */
-    public <RESULT> RESULT performsReactively(ReactiveMission<RESULT> reactiveMission) {
+    public <RESULT> Either<RESULT,Failure> performsReactively(ReactiveMission<RESULT> reactiveMission) {
         Optional<MissionStrategy> strategyToUse = decideStrategyToUse(reactiveMission);
-
         strategyToUse.ifPresent(strategy -> reactiveMission.withStrategy(strategy));
-        RESULT result = null;
+        Either<RESULT,Failure> result;
         try {
             String strategySet = (String) Await.result(ask(master, asEvent(this, reactiveMission), 1000), timeout);
             if (strategySet != "setStrategyCompleted") throw new StrategyException("not properly set");
             final FiniteDuration allowedDuration = reactiveMission.strategy().get().timeoutStrategy().first();
             Timeout timeoutFromStrategy = Timeout.durationToTimeout(allowedDuration);
-
-            // TODO: 1. use Either implementation : http://stackoverflow.com/questions/26162407/is-there-an-equivalent-of-scalas-either-in-java-8
-            result = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy), allowedDuration);
-            // TODO: 2. handle Futures
-            // TODO: 3. make sure we don't execute other missions after failure
+//            Future<RESULT> t = (Future<RESULT>) ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy);
+            RESULT  r = (RESULT) Await.result(ask(slave, asEvent(this, reactiveMission), timeoutFromStrategy), allowedDuration);
+            result = Either.left(r);
         } catch (Exception e) {
             failure = Failure.failure(e);
+            result = Either.right(failure);
             failed = true;
         }
         return result;
@@ -136,7 +134,7 @@ public class ReactiveAgent extends FunctionalAgent {
      * @param <RESULT>        - the type of the mission's result
      * @return the actual result of the mission
      */
-    public <RESULT> RESULT performsReactively(ReactiveMission<RESULT> reactiveMission, MissionStrategy missionStrategy) {
+    public <RESULT> Either<RESULT,Failure> performsReactively(ReactiveMission<RESULT> reactiveMission, MissionStrategy missionStrategy) {
         return performsReactively(reactiveMission.withStrategy(missionStrategy));
     }
 

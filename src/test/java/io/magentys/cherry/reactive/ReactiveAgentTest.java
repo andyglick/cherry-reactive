@@ -4,11 +4,15 @@ import io.magentys.Agent;
 import io.magentys.CoreMemory;
 import io.magentys.Mission;
 import io.magentys.annotations.Narrate;
+import io.magentys.cherry.reactive.common.Either;
 import io.magentys.cherry.reactive.models.Failure;
 import io.magentys.java8.FunctionalAgentProvider;
 import io.magentys.narrators.SysoutNarrator;
 import org.junit.Test;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.concurrent.TimeoutException;
 
@@ -20,6 +24,7 @@ import static io.magentys.cherry.reactive.ReactiveAgentTest.TakeScreenshot.takeS
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class ReactiveAgentTest {
@@ -70,7 +75,7 @@ public class ReactiveAgentTest {
 
     }
 
-    @Test(expected = TimeoutException.class)
+    @Test
     public void shouldMarkAgentAsFailedInCaseOfAnError() throws Throwable {
         ReactiveAgent reactiveAgent = ReactiveAgent.create(coreMemory(), "ReactiveAgent1")
                                                    .withDefaultStrategy(
@@ -80,7 +85,7 @@ public class ReactiveAgentTest {
         reactiveAgent.obtains(new Tool());
         reactiveAgent.addNarrators(new SysoutNarrator());
         DangerousMission dangerousMission = new DangerousMission();
-        String result = reactiveAgent.performsReactively(
+        Either<String,Failure> result = reactiveAgent.performsReactively(
                 dangerousMission
 
                                  .first(doThat(), doThat(), doThis())
