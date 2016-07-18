@@ -41,6 +41,8 @@ public class MultiMissionEvent implements CherryEvent<Agent,List<Mission>> {
         return agent;
     }
 
+    public Agent agent() { return agent; }
+
 
     @Override
     public String name() {
@@ -52,6 +54,8 @@ public class MultiMissionEvent implements CherryEvent<Agent,List<Mission>> {
     public List<Mission> metadata() {
         return metadata;
     }
+
+    public List<Mission> missions() { return metadata(); }
 
 
 }

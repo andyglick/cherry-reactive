@@ -31,4 +31,8 @@ public class ReactiveMissionEvent implements CherryEvent<ReactiveAgent,ReactiveM
     public ReactiveMission metadata() {
         return mission;
     }
+
+    public ReactiveAgent agent() { return body(); }
+
+    public ReactiveMission mission() { return metadata(); }
 }
