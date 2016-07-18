@@ -3,7 +3,7 @@
 
   <groupId>io.magentys</groupId>
   <artifactId>cherry-reactive</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.3</version>
 
   <name>cherry-reactive</name>
   <url>http://maven.apache.org</url>
@@ -35,7 +35,7 @@
   <scm>
     <developerConnection>scm:git:https://github.com/MagenTys/cherry-reactive</developerConnection>
     <url>https://github.com/MagenTys/cherry-reactive</url>
-    <tag>HEAD</tag>
+    <tag>cherry-reactive-0.0.3</tag>
   </scm>
 
   <distributionManagement>
