@@ -12,3 +12,9 @@ buildNumber.properties
 # IntelliJ
 *.iml
 .idea/
+
+*.iml
+*.ipr
+*.iws
+
+atlassian-ide-plugin.xml

@@ -1,11 +1,11 @@
 package io.magentys.cherry.reactive.events;
 
-public interface CherryEvent<BODY,METADATA> {
+@SuppressWarnings("unused")
+public interface CherryEvent<BODY, METADATA>
+{
+  BODY body();
 
-    BODY body();
+  String name();
 
-    String name();
-
-    METADATA metadata();
-
+  METADATA metadata();
 }
