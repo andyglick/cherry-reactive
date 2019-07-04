@@ -4,7 +4,7 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.magentys/cherry-reactive/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.magentys/cherry-reactive)
 
-This is an extension of Cherry Agents to be eventful using Akka [Akka](http://akka.io) actors - as part of the Cherry Framework: **[Cherry](https://github.com/MagenTys/cherry)** project.
+This is an extension of Cherry Agents to be eventful using Akka [Akka](http://akka.io) actors - as part of the Cherry Framework: **[Cherry](https://github.com/NTTDATA-UK/cherry)** project.
 
 Have a look at our full documentation found at:           
 [http://cherryframe.work](http://cherryframe.work).
@@ -12,4 +12,4 @@ Have a look at our full documentation found at:
             
 * Developers: [Kostas Mamalis](https://github.com/mamalisk)
 
-Powered by [MagenTys](http://magentys.io)
+Powered by [NTT DATA](https://uk.nttdata.com/)
