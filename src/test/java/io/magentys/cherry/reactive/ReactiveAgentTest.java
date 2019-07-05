@@ -1,5 +1,6 @@
 package io.magentys.cherry.reactive;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import io.magentys.Agent;
@@ -20,20 +21,29 @@ import static io.magentys.cherry.reactive.ReactiveAgentTest.Print.printSuccess;
 import static io.magentys.cherry.reactive.ReactiveAgentTest.TakeScreenshot.takeScreenshot;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @SuppressWarnings({"WeakerAccess", "unused", "ThrowableResultOfMethodCallIgnored", "unchecked"})
 public class ReactiveAgentTest
 {
+  private static final String VALUE = "value";
+
   @Test
   public void shouldCreateReactiveAgentWithMemory() throws Exception
   {
     CoreMemory memory = coreMemory();
-    memory.remember("test", "value");
+    memory.remember("test", VALUE);
     ReactiveAgent reactiveAgent = ReactiveAgent.create(memory);
-    assertThat(reactiveAgent.getMemory().isEmpty(), is(false));
-    assertThat(reactiveAgent.getMemory().recall("test").get(), is("value"));
+    assertThat(reactiveAgent.getMemory()
+      .isEmpty())
+      .as("memory is not empty")
+      .isFalse();
+
+    assertThat(reactiveAgent.getMemory()
+      .recall("test")
+      .get())
+      .as("recall that the key \"test\" produces " + VALUE).isEqualTo(VALUE);
   }
 
   @Test
@@ -43,8 +53,15 @@ public class ReactiveAgentTest
     agent.keepsInMind("test", "value");
     agent.obtains(new Tool());
     ReactiveAgent reactiveAgent = ReactiveAgent.createFrom(agent);
-    assertThat(reactiveAgent.recalls("test", String.class), is("value"));
-    assertThat(reactiveAgent.getTools().size(), is(1));
+
+    assertThat(reactiveAgent.recalls("test", String.class))
+      .as(" \"value\" is what is being returned ")
+      .isEqualTo("value");
+
+    assertThat(reactiveAgent.getTools()
+      .size())
+      .as("size must be 1")
+      .isEqualTo(1);
   }
 
   @Test
@@ -65,8 +82,13 @@ public class ReactiveAgentTest
         .on(RuntimeException.class, doThis())
         .onSuccess(printSuccess(), printSuccess())
     );
-    assertThat(reactiveAgent.hasFailed(), is(false));
-    assertThat(reactiveAgent.getFailure(), is(Failure.empty()));
+
+    assertThat(reactiveAgent.hasFailed())
+      .as("the agent has succeeded")
+      .isFalse();
+
+    assertThat(reactiveAgent.hasFailed()).isFalse();
+    assertThat(reactiveAgent.getFailure()).isEqualTo(Failure.empty());
     reactiveAgent.terminate();
   }
 
@@ -81,16 +103,14 @@ public class ReactiveAgentTest
     reactiveAgent.obtains(new Tool());
     reactiveAgent.addNarrators(new SysoutNarrator());
     DangerousMission dangerousMission = new DangerousMission();
-    Either<String, Failure> result = reactiveAgent.performsReactively(
-      dangerousMission
+    Either<String, Failure> result = reactiveAgent.performsReactively(dangerousMission
         .first(doThat(), doThat(), doThis())
-
         .timeout(Duration.create(3, SECONDS), doThis())
         .on(RuntimeException.class, takeScreenshot())
         .onSuccess(printSuccess())
     );
-    assertThat(reactiveAgent.hasFailed(), is(true));
-    assertThat(reactiveAgent.getFailureAs(Exception.class).getMessage(), is("Futures timed out after [3 seconds]"));
+    Assert.assertThat(reactiveAgent.hasFailed(), is(true));
+    Assert.assertThat(reactiveAgent.getFailureAs(Exception.class).getMessage(), is("Futures timed out after [3 seconds]"));
     reactiveAgent.terminate();
   }
 
@@ -104,7 +124,7 @@ public class ReactiveAgentTest
     reactiveAgent.addNarrators(new SysoutNarrator());
     DangerousMission dangerousMission = new DangerousMission();
     reactiveAgent.performsReactively(dangerousMission);
-    assertThat(reactiveAgent.hasFailed(), is(true));
+    Assert.assertThat(reactiveAgent.hasFailed(), is(true));
     reactiveAgent.terminate();
   }
 

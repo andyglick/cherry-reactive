@@ -82,7 +82,7 @@ public class ReactiveAgent extends FunctionalAgent
   public void terminate(Duration timeout)
   {
     system.terminate();
-    system.awaitTermination(timeout);
+    system.whenTerminated();
   }
 
   /**

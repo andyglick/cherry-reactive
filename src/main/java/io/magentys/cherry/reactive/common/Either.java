@@ -30,9 +30,7 @@ public final class Either<L, R>
     return new Either<>(Optional.empty(), Optional.of(value));
   }
 
-  public <T> T map(
-    Function<? super L, ? extends T> lFunc,
-    Function<? super R, ? extends T> rFunc)
+  public <T> T map(Function<? super L, ? extends T> lFunc, Function<? super R, ? extends T> rFunc)
   {
     return left.map(lFunc).orElseGet(() -> right.map(rFunc).get());
   }
@@ -53,7 +51,7 @@ public final class Either<L, R>
     right.ifPresent(rFunc);
   }
 
-  public static <RESULT> Either<Future<RESULT>, Failure> empty()
+  public static <F> Either<Future<F>, Failure> empty()
   {
     return new Either<>(Optional.empty(), Optional.empty());
   }
