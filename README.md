@@ -7,7 +7,7 @@
 This is an extension of Cherry Agents to be eventful using Akka [Akka](http://akka.io) actors - as part of the Cherry Framework: **[Cherry](https://github.com/NTTDATA-UK/cherry)** project.
 
 Have a look at our full documentation found at:           
-[http://cherryframe.work](http://cherryframe.work).
+[https://magentys.gitbooks.io/cherry/content/](https://magentys.gitbooks.io/cherry/content/).
             
             
 * Developers: [Kostas Mamalis](https://github.com/mamalisk)
